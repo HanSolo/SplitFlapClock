@@ -8,24 +8,21 @@
 import SwiftUI
 
 struct ContentView: View {
-    //@State private var rotate = false
+    @Environment(\.colorScheme)       var colorScheme
+    //@Environment(SplitFlapModel.self) var model : SplitFlapModel
+    @State var splitFlap : SplitFlap = SplitFlap(model: SplitFlapModel())
     
     
     var body: some View {
         ZStack {
-            RotateClockView()
+            VStack {
+                TimelineView(.animation(minimumInterval: 1)) { timeline in
+                    self.splitFlap
+                }
+                Button("Flip", action: {
+                    splitFlap.setCharacter(character: "B")
+                })
+            }
         }
-        /*
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-                .font(.largeTitle)
-                .foregroundStyle(.yellow)
-                .rotation3DEffect(.degrees(45), axis: (x: 1, y: 0, z: 0))
-        }
-        .padding()
-        */
     }
 }
