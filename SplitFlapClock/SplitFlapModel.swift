@@ -18,8 +18,11 @@ public class SplitFlapModel {
     }()
     
     
-    var backgroundColor : GraphicsContext.Shading = GraphicsContext.Shading.color(Color.init(hex: Properties.instance.backgroundColor!))
-    var textColor       : Color                   = Color.init(hex: Properties.instance.textColor!)
-    var currentCharacter: String                  = " "
-    var targetCharacter : String                  = " "
+    var backgroundColor : Color   = Color.init(hex: Properties.instance.backgroundColor!)
+    var textColor       : Color   = Color.init(hex: Properties.instance.textColor!)
+    
+    var currentCharacter: String  = ""
+    var targetCharacter : String  = " "
+    var flipUpper       : Bool    = false
+    var flipLower       : Bool    = false
 }

@@ -10,23 +10,24 @@ import Spatial
 
 struct SplitFlap: View {
     @State private var model              : SplitFlapModel
-    @State private var flipping           : Bool                    = false
+    @State private var characterSet       : Constants.CharacterSet
+    @State private var splitFlapFont      : Constants.SplitFlapFont
     @State private var isLandscape        : Bool                    = UIDevice.current.orientation.isLandscape
-    @State private var characterSet       : Constants.CharacterSet  = .alpha
-    @State private var splitFlapFont      : Constants.SplitFlapFont = .bebas
-    @State private var upperRotationAngle : Angle                   = Angle(degrees: -0)
-    @State private var lowerRotationAngle : Angle                   = Angle(degrees: -90)
     @State private var nextIndex          : Int                     = 1
     @State private var selectedIndex      : Int                     = 0
     @State private var prevIndex          : Int                     = Constants.CharacterSet.alpha.characters.count - 1
+    @State private var upperAngle         : Double                  = 0
+    @State private var lowerAngle         : Double                  = -90
+    @State private var flipping           : Bool                    = false
     
-    private let aspectRatio  : Double = 1.6666666667
-    private let flipDuration : Double = 5.0
+    private let flipDuration : Double = 0.100
     private let perspective  : Double = 0.05
     
     
-    init(model: SplitFlapModel) {
-        self.model = model
+    init(model: SplitFlapModel, characterSet: Constants.CharacterSet, splitFlapFont: Constants.SplitFlapFont) {
+        self.model         = model
+        self.characterSet  = characterSet
+        self.splitFlapFont = splitFlapFont
     }
     
     
@@ -38,9 +39,9 @@ struct SplitFlap: View {
                     let width            : Double                   = size.width
                     let height           : Double                   = size.height
                     let flapWidth        : Double                   = width
-                    let flapHeight       : Double                   = height / 2 //height / 1.87 * 0.9
-                    let backgroundColor  : GraphicsContext.Shading  = self.model.backgroundColor
-                    let textColor        : Color                    = self.model.textColor
+                    let flapHeight       : Double                   = height / 2 
+                    let backgroundColor  : GraphicsContext.Shading  = GraphicsContext.Shading.color(Helper.darker(color: self.model.backgroundColor))
+                    let textColor        : Color                    = Helper.darker(color: self.model.textColor)
                     let fontSize         : Double                   = height
                     let font             : Font                     = self.splitFlapFont.font(size: fontSize)
                     let character        : Text                     = Text(verbatim: self.characterSet.characters[self.nextIndex]).foregroundColor(textColor).font(font)
@@ -63,7 +64,7 @@ struct SplitFlap: View {
                     
                     ctx.fill(upperFlap, with: backgroundColor)
                     
-                    ctx.draw(character, at: CGPoint(x: width * 0.5, y: flapHeight * 1.15))
+                    ctx.draw(character, at: CGPoint(x: width * 0.5, y: flapHeight * 1.1))
                 }
 
                 // Lower Background
@@ -72,8 +73,8 @@ struct SplitFlap: View {
                     let height           : Double                   = size.height
                     let flapWidth        : Double                   = width
                     let flapHeight       : Double                   = height / 2
-                    let backgroundColor  : GraphicsContext.Shading  = self.model.backgroundColor
-                    let textColor        : Color                    = self.model.textColor
+                    let backgroundColor  : GraphicsContext.Shading  = GraphicsContext.Shading.color(Helper.brighter(color: self.model.backgroundColor))
+                    let textColor        : Color                    = Helper.brighter(color: self.model.textColor)
                     let fontSize         : Double                   = height
                     let font             : Font                     = self.splitFlapFont.font(size: fontSize)
                     let character        : Text                     = Text(verbatim: self.characterSet.characters[self.selectedIndex]).foregroundColor(textColor).font(font)
@@ -96,7 +97,7 @@ struct SplitFlap: View {
                                                     
                     ctx.fill(lowerFlap, with: backgroundColor)
                     
-                    ctx.draw(character, at: CGPoint(x: width * 0.5, y: flapHeight * 0.15) )
+                    ctx.draw(character, at: CGPoint(x: width * 0.5, y: flapHeight * 0.1) )
                 }
 
                 // Upper Flap
@@ -105,8 +106,8 @@ struct SplitFlap: View {
                     let height           : Double                   = size.height
                     let flapWidth        : Double                   = width
                     let flapHeight       : Double                   = height / 2
-                    let backgroundColor  : GraphicsContext.Shading  = self.model.backgroundColor
-                    let textColor        : Color                    = self.model.textColor
+                    let backgroundColor  : GraphicsContext.Shading  = GraphicsContext.Shading.color(Helper.darker(color: self.model.backgroundColor))
+                    let textColor        : Color                    = Helper.darker(color: self.model.textColor)
                     let fontSize         : Double                   = height
                     let font             : Font                     = self.splitFlapFont.font(size: fontSize)
                     let character        : Text                     = Text(verbatim: self.characterSet.characters[selectedIndex]).foregroundColor(textColor).font(font)
@@ -128,14 +129,13 @@ struct SplitFlap: View {
                     
                     ctx.fill(upperFlap, with: backgroundColor)
                     
-                    ctx.draw(character, at: CGPoint(x: width * 0.5, y: flapHeight * 1.15))
+                    ctx.draw(character, at: CGPoint(x: width * 0.5, y: flapHeight * 1.1))
                 }
-                .rotation3DEffect(.degrees(self.flipping ? -90 : 0),
+                .rotation3DEffect(.degrees(self.upperAngle),
                                   axis: (x: 1.0, y: 0.0, z: 0.0),
                                   anchor: UnitPoint(x: 0.5, y: 0.5),
                                   anchorZ: 0,
                                   perspective: self.perspective)
-                .animation(.easeInOut(duration: self.flipDuration), value: self.flipping)
                             
                 // Lower Flap
                 Canvas(opaque: false, colorMode: .linear, rendersAsynchronously: false) { ctx, size in
@@ -143,8 +143,8 @@ struct SplitFlap: View {
                     let height           : Double                   = size.height
                     let flapWidth        : Double                   = width
                     let flapHeight       : Double                   = height / 2
-                    let backgroundColor  : GraphicsContext.Shading  = self.model.backgroundColor
-                    let textColor        : Color                    = self.model.textColor
+                    let backgroundColor  : GraphicsContext.Shading  = GraphicsContext.Shading.color(Helper.brighter(color: self.model.backgroundColor))
+                    let textColor        : Color                    = Helper.brighter(color: self.model.textColor)
                     let fontSize         : Double                   = height
                     let font             : Font                     = self.splitFlapFont.font(size: fontSize)
                     let character        : Text                     = Text(verbatim: self.characterSet.characters[nextIndex]).foregroundColor(textColor).font(font)
@@ -168,52 +168,58 @@ struct SplitFlap: View {
                     
                     ctx.drawLayer { ctx1 in
                         ctx1.scaleBy(x: 1, y: -1)
-                        ctx1.draw(character, at: CGPoint(x: width * 0.5, y: -flapHeight * self.splitFlapFont.sizeFactor))
+                        ctx1.draw(character, at: CGPoint(x: width * 0.5, y: -flapHeight * 0.9))
                     }
                     
                 }
-                .rotation3DEffect(.degrees(self.flipping ? -180 : -90),
+                .rotation3DEffect(.degrees(self.lowerAngle),
                                   axis: (x: 1.0, y: 0.0, z: 0.0),
                                   anchor: UnitPoint(x: 0.5, y: 0.5),
                                   anchorZ: 0,
                                   perspective: self.perspective)
-                .animation(.easeOut(duration: self.flipDuration).delay(self.flipDuration), value: self.flipping)
             }
         }
-        .onChange(of: self.model.targetCharacter) {
-            if self.model.currentCharacter == self.model.targetCharacter { return }
-            self.flipping.toggle()
-            
-            /*
-            rotateTopFlap.setAngle(0);
-            rotateBottomFlap.setAngle(90);
-            nextIndex++;
-            if (nextIndex >= selectedCharacterSet.length) { nextIndex = 0; }
-
-            selectedIndex = nextIndex - 1;
-            if (selectedIndex < 0) { selectedIndex = selectedCharacterSet.length - 1; }
-
-            prevIndex = selectedIndex - 1;
-            if (prevIndex < 0) { prevIndex = selectedCharacterSet.length - 1; }
-
-            this.currentCharacter = selectedCharacterSet[selectedIndex];
-            redraw();
-            this.flipping.set(false);
-            this.flipping.removeListener(flippingListener);
-
-            if (this.currentCharacter.equals(this.targetCharacter)) {
-                fireEvent(new FlipEvent(SplitFlap.this, null, FlipEvent.FLIP_FINISHED));
-            } else {
-                flip();
+        .onChange(of: self.model.flipUpper) {
+            withAnimation(.linear(duration: self.flipDuration)) {
+                self.upperAngle = -90
+            } completion: {
+                self.model.flipLower.toggle()
             }
-            */
+        }
+        .onChange(of: self.model.flipLower) {
+            withAnimation(.linear(duration: self.flipDuration)) {
+                self.lowerAngle = -180
+            } completion: {
+                self.upperAngle = 0
+                self.lowerAngle = -90
+                
+                self.nextIndex += 1
+                if self.nextIndex >= self.characterSet.characters.count { self.nextIndex = 0 }
+
+                self.selectedIndex = self.nextIndex - 1
+                if self.selectedIndex < 0 { self.selectedIndex = self.characterSet.characters.count - 1 }
+
+                self.prevIndex = self.selectedIndex - 1
+                if self.prevIndex < 0 { self.prevIndex = self.characterSet.characters.count - 1 }
+
+                self.model.currentCharacter = self.characterSet.characters[self.selectedIndex]
+                
+                if self.model.currentCharacter != self.model.targetCharacter {
+                    self.model.flipUpper.toggle()
+                } else {
+                    self.flipping = false
+                }
+            }
         }
     }
     
-    public func getModel() -> SplitFlapModel { return self.model }
+    public func isFlipping() -> Bool { return self.flipping }
     
     public func setCharacter(character: String) -> Void {
-        if !self.characterSet.characters.contains(character) { return }
+        if !self.characterSet.characters.contains(character) || self.flipping { return }
+        if self.model.currentCharacter == self.model.targetCharacter { return }
         self.model.targetCharacter = character
+        self.flipping = true
+        self.model.flipUpper.toggle()
     }
 }

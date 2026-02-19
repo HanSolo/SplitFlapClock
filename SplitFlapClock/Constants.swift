@@ -11,9 +11,10 @@ import SwiftUI
 
 public struct Constants {
     
-    public static let APP_GROUP_ID   : String = "group.eu.hansolo.SplitFlapClock"
+    public static let APP_GROUP_ID           : String = "group.eu.hansolo.SplitFlapClock"
     
-        
+    public static let DARKER_BRIGHTER_FACTOR : Double = 0.85
+    
     public enum CharacterSet {
         case time0To5
         case time0To9
@@ -51,11 +52,11 @@ public struct Constants {
         
         func font(size: Double) -> Font {
             switch self {
-                case .bebas         : return Font.custom("Bebas Neue", size: size)
-                case .bebasRounded  : return Font.custom("Bebas Neue Semirounded", size: size)
-                case .dinCondensed  : return Font.custom("D-DIN Condensed Bold", size: size)
-                case .din           : return Font.custom("DIN Regular", size: size)
-                case .swagUrbano    : return Font.custom("Swag Urbano", size: size)
+            case .bebas         : return Font.custom("Bebas Neue", size: size * 0.85)
+            case .bebasRounded  : return Font.custom("Bebas Neue Semirounded", size: size * 0.85)
+            case .dinCondensed  : return Font.custom("D-DIN Condensed Bold", size: size * 0.85)
+            case .din           : return Font.custom("DIN Regular", size: size * 0.85)
+            case .swagUrbano    : return Font.custom("Swag Urbano", size: size * 0.84)
             }
         }
         
