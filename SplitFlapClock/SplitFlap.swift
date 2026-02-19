@@ -217,6 +217,7 @@ struct SplitFlap: View {
     
     public func setCharacter(character: String) -> Void {
         if !self.characterSet.characters.contains(character) || self.flipping { return }
+        // TODO: the following check doesn't work reliable
         if self.model.currentCharacter == self.model.targetCharacter { return }
         self.model.targetCharacter = character
         self.flipping = true
