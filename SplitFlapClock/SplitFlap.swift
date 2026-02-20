@@ -41,13 +41,13 @@ struct SplitFlap: View {
                     let darkerBackground   : Color    = Helper.darker(color: self.model.backgroundColor)
                     let brighterBackground : Color    = Helper.brighter(color: self.model.backgroundColor, factor: 0.5)
                     let gradient           : Gradient = Gradient(colors: [darkerBackground, brighterBackground, darkerBackground])
-                    let fixtureY           : Double   = height * 0.4525 * 0.99
+                    let fixtureY           : Double   = height * 0.4525 * 0.9875
                     let fixtureWidth       : Double   = width * 0.03333333333333 * 0.98
-                    let fixtureHeight      : Double   = height * 0.095 * 0.98
+                    let fixtureHeight      : Double   = height * 0.095 * 0.96
                     let leftPath           : Path     = Path(CGRect(x: width * 0.0041666666666, y: fixtureY, width: fixtureWidth, height: fixtureHeight))
                     let rightPath          : Path     = Path(CGRect(x: width * 0.9625, y: fixtureY, width: fixtureWidth, height: fixtureHeight))
-                    let axisY              : Double   = height * 0.4925 * 0.99
-                    let axisHeight         : Double   = height * 0.015 * 0.98
+                    let axisY              : Double   = height * 0.4925 * 0.9875
+                    let axisHeight         : Double   = height * 0.015 * 0.96
                     let axisPath           : Path     = Path(CGRect(x: width * 0.0375, y: axisY, width: 0.925 * width, height: axisHeight))
                                         
                     ctx.fill(leftPath, with: .linearGradient(gradient, startPoint: CGPoint(x: 0, y: fixtureY), endPoint: CGPoint(x: 0, y: fixtureY + fixtureHeight)))
