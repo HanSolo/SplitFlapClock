@@ -25,4 +25,5 @@ public class SplitFlapModel {
     var targetCharacter : String  = " "
     var flipUpper       : Bool    = false
     var flipLower       : Bool    = false
+    var readyToFlip     : Bool    = true
 }

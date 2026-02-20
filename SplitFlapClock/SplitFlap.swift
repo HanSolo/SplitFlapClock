@@ -9,16 +9,16 @@ import SwiftUI
 import Spatial
 
 struct SplitFlap: View {
-    @State private var model              : SplitFlapModel
-    @State private var characterSet       : Constants.CharacterSet
-    @State private var splitFlapFont      : Constants.SplitFlapFont
-    @State private var isLandscape        : Bool                    = UIDevice.current.orientation.isLandscape
-    @State private var nextIndex          : Int                     = 1
-    @State private var selectedIndex      : Int                     = 0
-    @State private var prevIndex          : Int                     = Constants.CharacterSet.alpha.characters.count - 1
-    @State private var upperAngle         : Double                  = 0
-    @State private var lowerAngle         : Double                  = -90
-    @State private var flipping           : Bool                    = false
+    @State private var model         : SplitFlapModel
+    @State private var characterSet  : Constants.CharacterSet
+    @State private var splitFlapFont : Constants.SplitFlapFont
+    @State private var isLandscape   : Bool                    = UIDevice.current.orientation.isLandscape
+    @State private var nextIndex     : Int                     = 1
+    @State private var selectedIndex : Int                     = 0
+    @State private var prevIndex     : Int                     = Constants.CharacterSet.alpha.characters.count - 1
+    @State private var upperAngle    : Double                  = 0
+    @State private var lowerAngle    : Double                  = -90
+
     
     private let flipDuration : Double = 0.100
     private let perspective  : Double = 0.05
@@ -207,20 +207,21 @@ struct SplitFlap: View {
                 if self.model.currentCharacter != self.model.targetCharacter {
                     self.model.flipUpper.toggle()
                 } else {
-                    self.flipping = false
+                    self.model.readyToFlip = true
                 }
             }
         }
     }
     
-    public func isFlipping() -> Bool { return self.flipping }
+    public func isReadToFlip() -> Bool { return self.model.readyToFlip }
+    
     
     public func setCharacter(character: String) -> Void {
-        if !self.characterSet.characters.contains(character) || self.flipping { return }
-        // TODO: the following check doesn't work reliable
-        if self.model.currentCharacter == self.model.targetCharacter { return }
+        if !self.model.readyToFlip { return }
+        if !self.characterSet.characters.contains(character) { return }
+        if self.model.currentCharacter == character { return }
         self.model.targetCharacter = character
-        self.flipping = true
+        self.model.readyToFlip = false
         self.model.flipUpper.toggle()
     }
 }

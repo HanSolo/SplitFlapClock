@@ -32,7 +32,6 @@ struct ContentView: View {
                         .frame(minWidth: 30, maxWidth: 120, minHeight: 50, maxHeight: 200)
                     self.minuteRight
                         .frame(minWidth: 30, maxWidth: 120, minHeight: 50, maxHeight: 200)
-                    
                 }
                 Spacer()
             }
@@ -53,11 +52,11 @@ struct ContentView: View {
         let leftMinute  : String   = minute < 10 ? "0"            : String(String(minute).first!)
         let rightMinute : String   = minute < 10 ? String(minute) : String(String(minute).last!)
         
-        if !self.hourLeft.isFlipping() { self.hourLeft.setCharacter(character: leftHour) }
-        if !self.hourRight.isFlipping() { self.hourRight.setCharacter(character: rightHour) }
+        if self.hourLeft.isReadToFlip() { self.hourLeft.setCharacter(character: leftHour) }
+        if self.hourRight.isReadToFlip() { self.hourRight.setCharacter(character: rightHour) }
         
-        if !self.minuteLeft.isFlipping() { self.minuteLeft.setCharacter(character : leftMinute) }
-        if !self.minuteRight.isFlipping() { self.minuteRight.setCharacter(character: rightMinute) }
+        if self.minuteLeft.isReadToFlip() { self.minuteLeft.setCharacter(character : leftMinute) }
+        if self.minuteRight.isReadToFlip() { self.minuteRight.setCharacter(character: rightMinute) }
         }
     }
 }
