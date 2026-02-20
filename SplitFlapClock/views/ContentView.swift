@@ -19,42 +19,19 @@ struct ContentView: View {
     var body: some View {
         GeometryReader { geometry in
             let isLandscape : Bool = geometry.size.width > geometry.size.height
-            
             ZStack {
-                if isLandscape {
-                    VStack {
-                        HStack {
-                            self.hourLeft
-                                .frame(minWidth: 30, maxWidth: 240, minHeight: 50, maxHeight: 400)
-                            self.hourRight
-                                .frame(minWidth: 30, maxWidth: 240, minHeight: 50, maxHeight: 400)
-                            Text(":")
-                                .font(.system(size: 66))
-                                .foregroundStyle(.white)
-                            self.minuteLeft
-                                .frame(minWidth: 30, maxWidth: 240, minHeight: 50, maxHeight: 400)
-                            self.minuteRight
-                                .frame(minWidth: 30, maxWidth: 240, minHeight: 50, maxHeight: 400)
-                        }
+                VStack {
+                    Spacer()
+                    HStack {
+                        self.hourLeft
+                        self.hourRight
+                        Text(":")
+                            .font(Font.custom("Bebas Neue", size: geometry.size.height * (isLandscape ? 0.5 : 0.125)))
+                            .foregroundStyle(.white)
+                        self.minuteLeft
+                        self.minuteRight
                     }
-                } else {
-                    VStack {
-                        Spacer()
-                        HStack {
-                            self.hourLeft
-                                .frame(minWidth: 30, maxWidth: 120, minHeight: 50, maxHeight: 200)
-                            self.hourRight
-                                .frame(minWidth: 30, maxWidth: 120, minHeight: 50, maxHeight: 200)
-                            Text(":")
-                                .font(.system(size: 66))
-                                .foregroundStyle(.white)
-                            self.minuteLeft
-                                .frame(minWidth: 30, maxWidth: 120, minHeight: 50, maxHeight: 200)
-                            self.minuteRight
-                                .frame(minWidth: 30, maxWidth: 120, minHeight: 50, maxHeight: 200)
-                        }
-                        Spacer()
-                    }
+                    Spacer()
                 }
             }
             .padding()

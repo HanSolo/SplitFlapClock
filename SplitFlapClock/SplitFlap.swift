@@ -36,6 +36,7 @@ struct SplitFlap: View {
             ZStack {
                 // Background
                 Canvas(opaque: false, colorMode: .linear, rendersAsynchronously: false) { ctx, size in
+                    debugPrint("\(size.width) x \(size.height)")
                     let width              : Double   = size.width
                     let height             : Double   = size.height
                     let darkerBackground   : Color    = Helper.darker(color: self.model.backgroundColor)
@@ -250,6 +251,7 @@ struct SplitFlap: View {
                 }
             }
         }
+        .aspectRatio(CGSize(width: 1, height: 1.66666666666), contentMode: .fit)
     }
     
     public func isReadToFlip() -> Bool { return self.model.readyToFlip }
