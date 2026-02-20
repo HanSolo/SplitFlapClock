@@ -20,7 +20,7 @@ struct SplitFlap: View {
     @State private var lowerAngle    : Double                  = -90
 
     
-    private let flipDuration : Double = 0.100
+    private let flipDuration : Double = 0.200
     private let perspective  : Double = 0.05
     
     
@@ -34,6 +34,27 @@ struct SplitFlap: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
+                // Background
+                Canvas(opaque: false, colorMode: .linear, rendersAsynchronously: false) { ctx, size in
+                    let width              : Double   = size.width
+                    let height             : Double   = size.height
+                    let darkerBackground   : Color    = Helper.darker(color: self.model.backgroundColor)
+                    let brighterBackground : Color    = Helper.brighter(color: self.model.backgroundColor, factor: 0.5)
+                    let gradient           : Gradient = Gradient(colors: [darkerBackground, brighterBackground, darkerBackground])
+                    let fixtureY           : Double   = height * 0.4525 * 0.99
+                    let fixtureWidth       : Double   = width * 0.03333333333333 * 0.98
+                    let fixtureHeight      : Double   = height * 0.095 * 0.98
+                    let leftPath           : Path     = Path(CGRect(x: width * 0.0041666666666, y: fixtureY, width: fixtureWidth, height: fixtureHeight))
+                    let rightPath          : Path     = Path(CGRect(x: width * 0.9625, y: fixtureY, width: fixtureWidth, height: fixtureHeight))
+                    let axisY              : Double   = height * 0.4925 * 0.99
+                    let axisHeight         : Double   = height * 0.015 * 0.98
+                    let axisPath           : Path     = Path(CGRect(x: width * 0.0375, y: axisY, width: 0.925 * width, height: axisHeight))
+                                        
+                    ctx.fill(leftPath, with: .linearGradient(gradient, startPoint: CGPoint(x: 0, y: fixtureY), endPoint: CGPoint(x: 0, y: fixtureY + fixtureHeight)))
+                    ctx.fill(rightPath, with: .linearGradient(gradient, startPoint: CGPoint(x: 0, y: fixtureY), endPoint: CGPoint(x: 0, y: fixtureY + fixtureHeight)))
+                    ctx.fill(axisPath, with: .linearGradient(gradient, startPoint: CGPoint(x: 0, y: axisY), endPoint: CGPoint(x: 0, y: axisY + axisHeight)))
+                }
+                
                 // Upper Background
                 Canvas(opaque: false, colorMode: .linear, rendersAsynchronously: false) { ctx, size in
                     let width            : Double                   = size.width
@@ -45,26 +66,30 @@ struct SplitFlap: View {
                     let fontSize         : Double                   = height
                     let font             : Font                     = self.splitFlapFont.font(size: fontSize)
                     let character        : Text                     = Text(verbatim: self.characterSet.characters[self.nextIndex]).foregroundColor(textColor).font(font)
-                                        
-                    ctx.clip(to: Path(CGRect(x: 0, y: 0, width: flapWidth, height: flapHeight)))
-                    
-                    var upperFlap        : Path = Path()
-                    upperFlap.move(to: CGPoint(x: flapWidth * 0.965987288135593, y: flapHeight))
-                    upperFlap.addLine(to: CGPoint(x: flapWidth * 0.034012711864406, y: flapHeight))
-                    upperFlap.addLine(to: CGPoint(x: flapWidth * 0.0340127118644068, y: flapHeight * 0.917794871794872))
-                    upperFlap.addLine(to: CGPoint(x: 0, y: flapHeight * 0.917794871794872))
-                    upperFlap.addLine(to: CGPoint(x: 0, y: flapHeight * 0.0770666666666667))
-                    upperFlap.addCurve(to: CGPoint(x: flapWidth * 0.0637754237288136, y: 0), control1: CGPoint(x: 0, y: flapHeight * 0.0345333333333333), control2: CGPoint(x: flapWidth * 0.0285762711864407, y: 0))
-                    upperFlap.addLine(to: CGPoint(x: flapWidth * 0.936072033898305, y: 0))
-                    upperFlap.addCurve(to: CGPoint(x: flapWidth, y: flapHeight * 0.0772512820512821), control1: CGPoint(x: flapWidth * 0.971351694915254, y: 0), control2: CGPoint(x: flapWidth, y: flapHeight * 0.0346205128205128))
-                    upperFlap.addLine(to: CGPoint(x: flapWidth, y: flapHeight * 0.917794871794872))
-                    upperFlap.addLine(to: CGPoint(x: flapWidth * 0.965987288135593, y: flapHeight * 0.917794871794872))
-                    upperFlap.addLine(to: CGPoint(x: flapWidth * 0.965987288135593, y: flapHeight))
-                    upperFlap.closeSubpath()
-                    
-                    ctx.fill(upperFlap, with: backgroundColor)
-                    
-                    ctx.draw(character, at: CGPoint(x: width * 0.5, y: flapHeight * 1.1))
+                                                            
+                    ctx.drawLayer { ctx1 in
+                        ctx1.scaleBy(x: 0.98, y: 0.97)
+                        ctx1.translateBy(x: width * 0.01, y: 0)
+                        ctx1.clip(to: Path(CGRect(x: 0, y: 0, width: flapWidth, height: flapHeight)))
+                        
+                        var upperFlap        : Path = Path()
+                        upperFlap.move(to: CGPoint(x: flapWidth * 0.965987288135593, y: flapHeight))
+                        upperFlap.addLine(to: CGPoint(x: flapWidth * 0.034012711864406, y: flapHeight))
+                        upperFlap.addLine(to: CGPoint(x: flapWidth * 0.0340127118644068, y: flapHeight * 0.917794871794872))
+                        upperFlap.addLine(to: CGPoint(x: 0, y: flapHeight * 0.917794871794872))
+                        upperFlap.addLine(to: CGPoint(x: 0, y: flapHeight * 0.0770666666666667))
+                        upperFlap.addCurve(to: CGPoint(x: flapWidth * 0.0637754237288136, y: 0), control1: CGPoint(x: 0, y: flapHeight * 0.0345333333333333), control2: CGPoint(x: flapWidth * 0.0285762711864407, y: 0))
+                        upperFlap.addLine(to: CGPoint(x: flapWidth * 0.936072033898305, y: 0))
+                        upperFlap.addCurve(to: CGPoint(x: flapWidth, y: flapHeight * 0.0772512820512821), control1: CGPoint(x: flapWidth * 0.971351694915254, y: 0), control2: CGPoint(x: flapWidth, y: flapHeight * 0.0346205128205128))
+                        upperFlap.addLine(to: CGPoint(x: flapWidth, y: flapHeight * 0.917794871794872))
+                        upperFlap.addLine(to: CGPoint(x: flapWidth * 0.965987288135593, y: flapHeight * 0.917794871794872))
+                        upperFlap.addLine(to: CGPoint(x: flapWidth * 0.965987288135593, y: flapHeight))
+                        upperFlap.closeSubpath()
+                        
+                        ctx1.fill(upperFlap, with: backgroundColor)
+                        
+                        ctx1.draw(character, at: CGPoint(x: width * 0.5, y: flapHeight * 1.1))
+                    }
                 }
 
                 // Lower Background
@@ -78,26 +103,31 @@ struct SplitFlap: View {
                     let fontSize         : Double                   = height
                     let font             : Font                     = self.splitFlapFont.font(size: fontSize)
                     let character        : Text                     = Text(verbatim: self.characterSet.characters[self.selectedIndex]).foregroundColor(textColor).font(font)
-                                    
-                    ctx.clip(to: Path(CGRect(x: 0, y: flapHeight, width: flapWidth, height: flapHeight)))
-                    ctx.translateBy(x: 0, y: flapHeight)
-                    var lowerFlap        : Path = Path()
-                    lowerFlap.move(to: CGPoint(x: flapWidth * 0.965987288135593, y: 0))
-                    lowerFlap.addLine(to: CGPoint(x: flapWidth * 0.0340127118644068, y: 0))
-                    lowerFlap.addLine(to: CGPoint(x: flapWidth * 0.0340127118644068, y: flapHeight * 0.0822051282051282))
-                    lowerFlap.addLine(to: CGPoint(x: 0, y: flapHeight * 0.0822051282051282))
-                    lowerFlap.addLine(to: CGPoint(x: 0, y: flapHeight * 0.922933333333333))
-                    lowerFlap.addCurve(to: CGPoint(x: flapWidth * 0.0637754237288136, y: flapHeight), control1: CGPoint(x: 0, y: flapHeight * 0.965466666666667), control2: CGPoint(x: flapWidth * 0.0285762711864407, y: flapHeight))
-                    lowerFlap.addLine(to: CGPoint(x: flapWidth * 0.936072033898305, y: flapHeight))
-                    lowerFlap.addCurve(to: CGPoint(x: flapWidth, y: flapHeight * 0.922748717948718), control1: CGPoint(x: flapWidth * 0.971351694915254, y: flapHeight), control2: CGPoint(x: flapWidth, y: flapHeight * 0.965379487179487))
-                    lowerFlap.addLine(to: CGPoint(x: flapWidth, y: flapHeight * 0.0822051282051282))
-                    lowerFlap.addLine(to: CGPoint(x: flapWidth * 0.965987288135593, y: flapHeight * 0.0822051282051282))
-                    lowerFlap.addLine(to: CGPoint(x: flapWidth * 0.965987288135593, y: 0))
-                    lowerFlap.closeSubpath()
-                                                    
-                    ctx.fill(lowerFlap, with: backgroundColor)
-                    
-                    ctx.draw(character, at: CGPoint(x: width * 0.5, y: flapHeight * 0.1) )
+                                        
+                    ctx.drawLayer { ctx1 in
+                        ctx1.scaleBy(x: 0.98, y: 0.97)
+                        ctx1.translateBy(x: width * 0.01, y: height * 0.015)
+                        ctx1.clip(to: Path(CGRect(x: 0, y: flapHeight, width: flapWidth, height: flapHeight)))
+                        
+                        ctx1.translateBy(x: 0, y: flapHeight)
+                        var lowerFlap        : Path = Path()
+                        lowerFlap.move(to: CGPoint(x: flapWidth * 0.965987288135593, y: 0))
+                        lowerFlap.addLine(to: CGPoint(x: flapWidth * 0.0340127118644068, y: 0))
+                        lowerFlap.addLine(to: CGPoint(x: flapWidth * 0.0340127118644068, y: flapHeight * 0.0822051282051282))
+                        lowerFlap.addLine(to: CGPoint(x: 0, y: flapHeight * 0.0822051282051282))
+                        lowerFlap.addLine(to: CGPoint(x: 0, y: flapHeight * 0.922933333333333))
+                        lowerFlap.addCurve(to: CGPoint(x: flapWidth * 0.0637754237288136, y: flapHeight), control1: CGPoint(x: 0, y: flapHeight * 0.965466666666667), control2: CGPoint(x: flapWidth * 0.0285762711864407, y: flapHeight))
+                        lowerFlap.addLine(to: CGPoint(x: flapWidth * 0.936072033898305, y: flapHeight))
+                        lowerFlap.addCurve(to: CGPoint(x: flapWidth, y: flapHeight * 0.922748717948718), control1: CGPoint(x: flapWidth * 0.971351694915254, y: flapHeight), control2: CGPoint(x: flapWidth, y: flapHeight * 0.965379487179487))
+                        lowerFlap.addLine(to: CGPoint(x: flapWidth, y: flapHeight * 0.0822051282051282))
+                        lowerFlap.addLine(to: CGPoint(x: flapWidth * 0.965987288135593, y: flapHeight * 0.0822051282051282))
+                        lowerFlap.addLine(to: CGPoint(x: flapWidth * 0.965987288135593, y: 0))
+                        lowerFlap.closeSubpath()
+                                                        
+                        ctx1.fill(lowerFlap, with: backgroundColor)
+                        
+                        ctx1.draw(character, at: CGPoint(x: width * 0.5, y: flapHeight * 0.1) )
+                    }
                 }
 
                 // Upper Flap
@@ -111,25 +141,30 @@ struct SplitFlap: View {
                     let fontSize         : Double                   = height
                     let font             : Font                     = self.splitFlapFont.font(size: fontSize)
                     let character        : Text                     = Text(verbatim: self.characterSet.characters[selectedIndex]).foregroundColor(textColor).font(font)
-                    
-                    ctx.clip(to: Path(CGRect(x: 0, y: 0, width: flapWidth, height: flapHeight)))
-                    var upperFlap        : Path = Path()
-                    upperFlap.move(to: CGPoint(x: flapWidth * 0.965987288135593, y: flapHeight))
-                    upperFlap.addLine(to: CGPoint(x: flapWidth * 0.034012711864406, y: flapHeight))
-                    upperFlap.addLine(to: CGPoint(x: flapWidth * 0.0340127118644068, y: flapHeight * 0.917794871794872))
-                    upperFlap.addLine(to: CGPoint(x: 0, y: flapHeight * 0.917794871794872))
-                    upperFlap.addLine(to: CGPoint(x: 0, y: flapHeight * 0.0770666666666667))
-                    upperFlap.addCurve(to: CGPoint(x: flapWidth * 0.0637754237288136, y: 0), control1: CGPoint(x: 0, y: flapHeight * 0.0345333333333333), control2: CGPoint(x: flapWidth * 0.0285762711864407, y: 0))
-                    upperFlap.addLine(to: CGPoint(x: flapWidth * 0.936072033898305, y: 0))
-                    upperFlap.addCurve(to: CGPoint(x: flapWidth, y: flapHeight * 0.0772512820512821), control1: CGPoint(x: flapWidth * 0.971351694915254, y: 0), control2: CGPoint(x: flapWidth, y: flapHeight * 0.0346205128205128))
-                    upperFlap.addLine(to: CGPoint(x: flapWidth, y: flapHeight * 0.917794871794872))
-                    upperFlap.addLine(to: CGPoint(x: flapWidth * 0.965987288135593, y: flapHeight * 0.917794871794872))
-                    upperFlap.addLine(to: CGPoint(x: flapWidth * 0.965987288135593, y: flapHeight))
-                    upperFlap.closeSubpath()
-                    
-                    ctx.fill(upperFlap, with: backgroundColor)
-                    
-                    ctx.draw(character, at: CGPoint(x: width * 0.5, y: flapHeight * 1.1))
+                                        
+                    ctx.drawLayer { ctx1 in
+                        ctx1.scaleBy(x: 0.98, y: 0.97)
+                        ctx1.translateBy(x: width * 0.01, y: 0)
+                        ctx1.clip(to: Path(CGRect(x: 0, y: 0, width: flapWidth, height: flapHeight)))
+                        
+                        var upperFlap        : Path = Path()
+                        upperFlap.move(to: CGPoint(x: flapWidth * 0.965987288135593, y: flapHeight))
+                        upperFlap.addLine(to: CGPoint(x: flapWidth * 0.034012711864406, y: flapHeight))
+                        upperFlap.addLine(to: CGPoint(x: flapWidth * 0.0340127118644068, y: flapHeight * 0.917794871794872))
+                        upperFlap.addLine(to: CGPoint(x: 0, y: flapHeight * 0.917794871794872))
+                        upperFlap.addLine(to: CGPoint(x: 0, y: flapHeight * 0.0770666666666667))
+                        upperFlap.addCurve(to: CGPoint(x: flapWidth * 0.0637754237288136, y: 0), control1: CGPoint(x: 0, y: flapHeight * 0.0345333333333333), control2: CGPoint(x: flapWidth * 0.0285762711864407, y: 0))
+                        upperFlap.addLine(to: CGPoint(x: flapWidth * 0.936072033898305, y: 0))
+                        upperFlap.addCurve(to: CGPoint(x: flapWidth, y: flapHeight * 0.0772512820512821), control1: CGPoint(x: flapWidth * 0.971351694915254, y: 0), control2: CGPoint(x: flapWidth, y: flapHeight * 0.0346205128205128))
+                        upperFlap.addLine(to: CGPoint(x: flapWidth, y: flapHeight * 0.917794871794872))
+                        upperFlap.addLine(to: CGPoint(x: flapWidth * 0.965987288135593, y: flapHeight * 0.917794871794872))
+                        upperFlap.addLine(to: CGPoint(x: flapWidth * 0.965987288135593, y: flapHeight))
+                        upperFlap.closeSubpath()
+                        
+                        ctx1.fill(upperFlap, with: backgroundColor)
+                        
+                        ctx1.draw(character, at: CGPoint(x: width * 0.5, y: flapHeight * 1.1))
+                    }
                 }
                 .rotation3DEffect(.degrees(self.upperAngle),
                                   axis: (x: 1.0, y: 0.0, z: 0.0),
@@ -148,29 +183,33 @@ struct SplitFlap: View {
                     let fontSize         : Double                   = height
                     let font             : Font                     = self.splitFlapFont.font(size: fontSize)
                     let character        : Text                     = Text(verbatim: self.characterSet.characters[nextIndex]).foregroundColor(textColor).font(font)
-                    
-                    ctx.clip(to: Path(CGRect(x: 0, y: 0, width: flapWidth, height: flapHeight)))
-                    var upperFlap        : Path = Path()
-                    upperFlap.move(to: CGPoint(x: flapWidth * 0.965987288135593, y: flapHeight))
-                    upperFlap.addLine(to: CGPoint(x: flapWidth * 0.034012711864406, y: flapHeight))
-                    upperFlap.addLine(to: CGPoint(x: flapWidth * 0.0340127118644068, y: flapHeight * 0.917794871794872))
-                    upperFlap.addLine(to: CGPoint(x: 0, y: flapHeight * 0.917794871794872))
-                    upperFlap.addLine(to: CGPoint(x: 0, y: flapHeight * 0.0770666666666667))
-                    upperFlap.addCurve(to: CGPoint(x: flapWidth * 0.0637754237288136, y: 0), control1: CGPoint(x: 0, y: flapHeight * 0.0345333333333333), control2: CGPoint(x: flapWidth * 0.0285762711864407, y: 0))
-                    upperFlap.addLine(to: CGPoint(x: flapWidth * 0.936072033898305, y: 0))
-                    upperFlap.addCurve(to: CGPoint(x: flapWidth, y: flapHeight * 0.0772512820512821), control1: CGPoint(x: flapWidth * 0.971351694915254, y: 0), control2: CGPoint(x: flapWidth, y: flapHeight * 0.0346205128205128))
-                    upperFlap.addLine(to: CGPoint(x: flapWidth, y: flapHeight * 0.917794871794872))
-                    upperFlap.addLine(to: CGPoint(x: flapWidth * 0.965987288135593, y: flapHeight * 0.917794871794872))
-                    upperFlap.addLine(to: CGPoint(x: flapWidth * 0.965987288135593, y: flapHeight))
-                    upperFlap.closeSubpath()
-                    
-                    ctx.fill(upperFlap, with: backgroundColor)
-                    
+                                                        
                     ctx.drawLayer { ctx1 in
-                        ctx1.scaleBy(x: 1, y: -1)
-                        ctx1.draw(character, at: CGPoint(x: width * 0.5, y: -flapHeight * 0.9))
+                        ctx1.scaleBy(x: 0.98, y: 0.97)
+                        ctx1.translateBy(x: width * 0.01, y: height * 0.015)
+                        ctx1.clip(to: Path(CGRect(x: 0, y: 0, width: flapWidth, height: flapHeight)))
+                        
+                        var upperFlap        : Path = Path()
+                        upperFlap.move(to: CGPoint(x: flapWidth * 0.965987288135593, y: flapHeight))
+                        upperFlap.addLine(to: CGPoint(x: flapWidth * 0.034012711864406, y: flapHeight))
+                        upperFlap.addLine(to: CGPoint(x: flapWidth * 0.0340127118644068, y: flapHeight * 0.917794871794872))
+                        upperFlap.addLine(to: CGPoint(x: 0, y: flapHeight * 0.917794871794872))
+                        upperFlap.addLine(to: CGPoint(x: 0, y: flapHeight * 0.0770666666666667))
+                        upperFlap.addCurve(to: CGPoint(x: flapWidth * 0.0637754237288136, y: 0), control1: CGPoint(x: 0, y: flapHeight * 0.0345333333333333), control2: CGPoint(x: flapWidth * 0.0285762711864407, y: 0))
+                        upperFlap.addLine(to: CGPoint(x: flapWidth * 0.936072033898305, y: 0))
+                        upperFlap.addCurve(to: CGPoint(x: flapWidth, y: flapHeight * 0.0772512820512821), control1: CGPoint(x: flapWidth * 0.971351694915254, y: 0), control2: CGPoint(x: flapWidth, y: flapHeight * 0.0346205128205128))
+                        upperFlap.addLine(to: CGPoint(x: flapWidth, y: flapHeight * 0.917794871794872))
+                        upperFlap.addLine(to: CGPoint(x: flapWidth * 0.965987288135593, y: flapHeight * 0.917794871794872))
+                        upperFlap.addLine(to: CGPoint(x: flapWidth * 0.965987288135593, y: flapHeight))
+                        upperFlap.closeSubpath()
+                        
+                        ctx1.fill(upperFlap, with: backgroundColor)
+                        
+                        ctx1.drawLayer { ctx1 in
+                            ctx1.scaleBy(x: 1, y: -1)
+                            ctx1.draw(character, at: CGPoint(x: width * 0.5, y: -flapHeight * 0.9))
+                        }
                     }
-                    
                 }
                 .rotation3DEffect(.degrees(self.lowerAngle),
                                   axis: (x: 1.0, y: 0.0, z: 0.0),

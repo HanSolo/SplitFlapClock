@@ -14,9 +14,15 @@ public struct Helper {
     public static func darker(color: Color) -> Color {
         return deriveColor(color: color, hueShift: 0, saturationFactor: 1.0, brightnessFactor: Constants.DARKER_BRIGHTER_FACTOR, opacityFactor: 1.0)
     }
+    public static func darker(color: Color, factor: Double) -> Color {
+        return deriveColor(color: color, hueShift: 0, saturationFactor: 1.0, brightnessFactor: factor, opacityFactor: 1.0)
+    }
     
     public static func brighter(color: Color) -> Color {
         return deriveColor(color: color, hueShift: 0, saturationFactor: 1.0, brightnessFactor: 1.0 / Constants.DARKER_BRIGHTER_FACTOR, opacityFactor: 1.0)
+    }
+    public static func brighter(color: Color, factor: Double) -> Color {
+        return deriveColor(color: color, hueShift: 0, saturationFactor: 1.0, brightnessFactor: 1.0 / factor, opacityFactor: 1.0)
     }
     
     public static func deriveColor(color: Color, hueShift: Double, saturationFactor: Double, brightnessFactor: Double, opacityFactor: Double) -> Color {
