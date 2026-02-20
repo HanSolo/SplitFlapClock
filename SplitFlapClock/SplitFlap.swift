@@ -36,7 +36,6 @@ struct SplitFlap: View {
             ZStack {
                 // Background
                 Canvas(opaque: false, colorMode: .linear, rendersAsynchronously: false) { ctx, size in
-                    debugPrint("\(size.width) x \(size.height)")
                     let width              : Double   = size.width
                     let height             : Double   = size.height
                     let darkerBackground   : Color    = Helper.darker(color: self.model.backgroundColor)
