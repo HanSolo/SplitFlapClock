@@ -59,6 +59,7 @@ public class RowModel {
     
     public func setText(text: String) -> Void {
         for i in 0 ..< self.noOfCharacters {
+            
             let char : String = text.characterAt(i) ?? self.characterSet.characters.last!
             self.splitFlaps[i].setCharacter(character: char)
         }

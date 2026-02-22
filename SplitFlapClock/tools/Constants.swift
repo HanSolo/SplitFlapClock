@@ -13,7 +13,7 @@ public struct Constants {
     
     public static let APP_GROUP_ID           : String = "group.eu.hansolo.SplitFlapClock"
     
-    public static let DARKER_BRIGHTER_FACTOR : Double = 0.925//85
+    public static let DARKER_BRIGHTER_FACTOR : Double = 0.85
     
     public static let DEFAULT_FLIP_TIME      : Double = 0.200
     
