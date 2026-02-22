@@ -17,13 +17,26 @@ public class SplitFlapModel {
         return instance
     }()
     
+        
     
-    var backgroundColor : Color   = Color.init(hex: Properties.instance.backgroundColor!)
-    var textColor       : Color   = Color.init(hex: Properties.instance.textColor!)
+    var characterSet    : Constants.CharacterSet  = .alphanumeric
+    var splitFlapFont   : Constants.SplitFlapFont = .bebas
+    var backgroundColor : Color                   = Color.init(hex: Properties.instance.backgroundColor!)
+    var textColor       : Color                   = Color.init(hex: Properties.instance.textColor!)
+    var flipTime        : Double                  = Constants.DEFAULT_FLIP_TIME
     
-    var currentCharacter: String  = ""
-    var targetCharacter : String  = " "
-    var flipUpper       : Bool    = false
-    var flipLower       : Bool    = false
-    var readyToFlip     : Bool    = true
+    var currentCharacter: String                  = Constants.CharacterSet.alphanumeric.characters.first!
+    var targetCharacter : String                  = Constants.CharacterSet.alphanumeric.characters.first!
+    var flipUpper       : Bool                    = false
+    var flipLower       : Bool                    = false
+    var readyToFlip     : Bool                    = true
+    
+    
+    init(characterSet: Constants.CharacterSet = .alphanumeric, splitFlapFont: Constants.SplitFlapFont = .bebas, backgroundColor: Color = Color.init(hex: Properties.instance.backgroundColor!), textColor: Color = Color.init(hex: Properties.instance.textColor!), flipTime: Double = Constants.DEFAULT_FLIP_TIME) {
+        self.characterSet    = characterSet
+        self.splitFlapFont   = splitFlapFont
+        self.backgroundColor = backgroundColor
+        self.textColor       = textColor
+        self.flipTime        = flipTime
+    }
 }

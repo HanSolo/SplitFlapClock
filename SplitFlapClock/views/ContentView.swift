@@ -9,10 +9,13 @@ import SwiftUI
 internal import Combine
 
 struct ContentView: View {
-    @State var hourLeft    : SplitFlap = SplitFlap(model: SplitFlapModel(), characterSet: Constants.CharacterSet.time0To5, splitFlapFont: Constants.SplitFlapFont.bebas)
-    @State var hourRight   : SplitFlap = SplitFlap(model: SplitFlapModel(), characterSet: Constants.CharacterSet.time0To9, splitFlapFont: Constants.SplitFlapFont.bebas)
-    @State var minuteLeft  : SplitFlap = SplitFlap(model: SplitFlapModel(), characterSet: Constants.CharacterSet.time0To5, splitFlapFont: Constants.SplitFlapFont.bebas)
-    @State var minuteRight : SplitFlap = SplitFlap(model: SplitFlapModel(), characterSet: Constants.CharacterSet.time0To9, splitFlapFont: Constants.SplitFlapFont.bebas)
+    @State var hourLeft    : SplitFlap = SplitFlap(model: SplitFlapModel(characterSet: Constants.CharacterSet.time0To9, splitFlapFont: Constants.SplitFlapFont.bebas))
+    @State var hourRight   : SplitFlap = SplitFlap(model: SplitFlapModel(characterSet: Constants.CharacterSet.time0To9, splitFlapFont: Constants.SplitFlapFont.bebas))
+    @State var minuteLeft  : SplitFlap = SplitFlap(model: SplitFlapModel(characterSet: Constants.CharacterSet.time0To5, splitFlapFont: Constants.SplitFlapFont.bebas))
+    @State var minuteRight : SplitFlap = SplitFlap(model: SplitFlapModel(characterSet: Constants.CharacterSet.time0To9, splitFlapFont: Constants.SplitFlapFont.bebas))
+    @State var rowModel0   : RowModel  = RowModel(noOfCharacters: 5, flipTime: 0.050)
+    @State var rowModel1   : RowModel  = RowModel(noOfCharacters: 5, flipTime: 0.050)
+    @State var toggle      : Bool      = false
     
     let timer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
     
@@ -21,6 +24,9 @@ struct ContentView: View {
             let isLandscape : Bool = geometry.size.width > geometry.size.height
             ZStack {
                 VStack {
+                    Spacer()
+                    Row(model: rowModel0)
+                    Row(model: rowModel1)
                     Spacer()
                     HStack {
                         self.hourLeft
@@ -37,6 +43,14 @@ struct ContentView: View {
             .padding()
             .onReceive(timer) { time in
                 updateClock(date: time)
+                if self.toggle {
+                    rowModel0.setText(text: "SWIFT")
+                    rowModel1.setText(text: "ROCKS")
+                } else {
+                    rowModel0.setText(text: "DEMO ")
+                    rowModel1.reset()
+                }
+                self.toggle.toggle()
             }
         }
     }

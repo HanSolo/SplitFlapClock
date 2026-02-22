@@ -10,24 +10,17 @@ import Spatial
 
 struct SplitFlap: View {
     @State private var model         : SplitFlapModel
-    @State private var characterSet  : Constants.CharacterSet
-    @State private var splitFlapFont : Constants.SplitFlapFont
     @State private var isLandscape   : Bool                    = UIDevice.current.orientation.isLandscape
     @State private var nextIndex     : Int                     = 1
     @State private var selectedIndex : Int                     = 0
-    @State private var prevIndex     : Int                     = Constants.CharacterSet.alpha.characters.count - 1
+    @State private var prevIndex     : Int                     = Constants.CharacterSet.alphanumeric.characters.count - 1
     @State private var upperAngle    : Double                  = 0
     @State private var lowerAngle    : Double                  = -90
-
-    
-    private let flipDuration : Double = 0.200
     private let perspective  : Double = 0.05
     
     
-    init(model: SplitFlapModel, characterSet: Constants.CharacterSet, splitFlapFont: Constants.SplitFlapFont) {
-        self.model         = model
-        self.characterSet  = characterSet
-        self.splitFlapFont = splitFlapFont
+    init(model: SplitFlapModel) {
+        self.model = model        
     }
     
     
@@ -64,8 +57,8 @@ struct SplitFlap: View {
                     let backgroundColor  : GraphicsContext.Shading  = GraphicsContext.Shading.color(Helper.darker(color: self.model.backgroundColor))
                     let textColor        : Color                    = Helper.darker(color: self.model.textColor)
                     let fontSize         : Double                   = height
-                    let font             : Font                     = self.splitFlapFont.font(size: fontSize)
-                    let character        : Text                     = Text(verbatim: self.characterSet.characters[self.nextIndex]).foregroundColor(textColor).font(font)
+                    let font             : Font                     = self.model.splitFlapFont.font(size: fontSize)
+                    let character        : Text                     = Text(verbatim: self.model.characterSet.characters[self.nextIndex]).foregroundColor(textColor).font(font)
                                                             
                     ctx.drawLayer { ctx1 in
                         ctx1.scaleBy(x: 0.98, y: 0.97)
@@ -101,8 +94,8 @@ struct SplitFlap: View {
                     let backgroundColor  : GraphicsContext.Shading  = GraphicsContext.Shading.color(Helper.brighter(color: self.model.backgroundColor))
                     let textColor        : Color                    = Helper.brighter(color: self.model.textColor)
                     let fontSize         : Double                   = height
-                    let font             : Font                     = self.splitFlapFont.font(size: fontSize)
-                    let character        : Text                     = Text(verbatim: self.characterSet.characters[self.selectedIndex]).foregroundColor(textColor).font(font)
+                    let font             : Font                     = self.model.splitFlapFont.font(size: fontSize)
+                    let character        : Text                     = Text(verbatim: self.model.characterSet.characters[self.selectedIndex]).foregroundColor(textColor).font(font)
                                         
                     ctx.drawLayer { ctx1 in
                         ctx1.scaleBy(x: 0.98, y: 0.97)
@@ -139,8 +132,8 @@ struct SplitFlap: View {
                     let backgroundColor  : GraphicsContext.Shading  = GraphicsContext.Shading.color(Helper.darker(color: self.model.backgroundColor))
                     let textColor        : Color                    = Helper.darker(color: self.model.textColor)
                     let fontSize         : Double                   = height
-                    let font             : Font                     = self.splitFlapFont.font(size: fontSize)
-                    let character        : Text                     = Text(verbatim: self.characterSet.characters[selectedIndex]).foregroundColor(textColor).font(font)
+                    let font             : Font                     = self.model.splitFlapFont.font(size: fontSize)
+                    let character        : Text                     = Text(verbatim: self.model.characterSet.characters[selectedIndex]).foregroundColor(textColor).font(font)
                                         
                     ctx.drawLayer { ctx1 in
                         ctx1.scaleBy(x: 0.98, y: 0.97)
@@ -181,8 +174,8 @@ struct SplitFlap: View {
                     let backgroundColor  : GraphicsContext.Shading  = GraphicsContext.Shading.color(Helper.brighter(color: self.model.backgroundColor))
                     let textColor        : Color                    = Helper.brighter(color: self.model.textColor)
                     let fontSize         : Double                   = height
-                    let font             : Font                     = self.splitFlapFont.font(size: fontSize)
-                    let character        : Text                     = Text(verbatim: self.characterSet.characters[nextIndex]).foregroundColor(textColor).font(font)
+                    let font             : Font                     = self.model.splitFlapFont.font(size: fontSize)
+                    let character        : Text                     = Text(verbatim: self.model.characterSet.characters[nextIndex]).foregroundColor(textColor).font(font)
                                                         
                     ctx.drawLayer { ctx1 in
                         ctx1.scaleBy(x: 0.98, y: 0.97)
@@ -219,29 +212,29 @@ struct SplitFlap: View {
             }
         }
         .onChange(of: self.model.flipUpper) {
-            withAnimation(.linear(duration: self.flipDuration)) {
+            withAnimation(.linear(duration: self.model.flipTime)) {
                 self.upperAngle = -90
             } completion: {
                 self.model.flipLower.toggle()
             }
         }
         .onChange(of: self.model.flipLower) {
-            withAnimation(.linear(duration: self.flipDuration)) {
+            withAnimation(.linear(duration: self.model.flipTime)) {
                 self.lowerAngle = -180
             } completion: {
                 self.upperAngle = 0
                 self.lowerAngle = -90
                 
                 self.nextIndex += 1
-                if self.nextIndex >= self.characterSet.characters.count { self.nextIndex = 0 }
+                if self.nextIndex >= self.model.characterSet.characters.count { self.nextIndex = 0 }
 
                 self.selectedIndex = self.nextIndex - 1
-                if self.selectedIndex < 0 { self.selectedIndex = self.characterSet.characters.count - 1 }
+                if self.selectedIndex < 0 { self.selectedIndex = self.model.characterSet.characters.count - 1 }
 
                 self.prevIndex = self.selectedIndex - 1
-                if self.prevIndex < 0 { self.prevIndex = self.characterSet.characters.count - 1 }
+                if self.prevIndex < 0 { self.prevIndex = self.model.characterSet.characters.count - 1 }
 
-                self.model.currentCharacter = self.characterSet.characters[self.selectedIndex]
+                self.model.currentCharacter = self.model.characterSet.characters[self.selectedIndex]
                 
                 if self.model.currentCharacter != self.model.targetCharacter {
                     self.model.flipUpper.toggle()
@@ -255,13 +248,24 @@ struct SplitFlap: View {
     
     public func isReadToFlip() -> Bool { return self.model.readyToFlip }
     
+    public func reset() -> Void { self.setCharacter(character: self.model.characterSet.characters[0]) }
+
+    public func selfCheck() -> Void {
+        self.reset()
+        self.setCharacter(character: self.model.characterSet.characters[self.model.characterSet.characters.count - 1]);
+    }
+    
+    public func setFlipTime(flipTime: Double) -> Void {
+        self.model.flipTime = flipTime
+    }
+    
     
     public func setCharacter(character: String) -> Void {
         if !self.model.readyToFlip { return }
-        if !self.characterSet.characters.contains(character) { return }
+        if !self.model.characterSet.characters.contains(character) { return }
         if self.model.currentCharacter == character { return }
         self.model.targetCharacter = character
         self.model.readyToFlip = false
         self.model.flipUpper.toggle()
-    }
+    }            
 }
