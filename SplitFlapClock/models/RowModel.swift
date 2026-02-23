@@ -50,8 +50,12 @@ public class RowModel {
     
     public func view() -> some View {
         return HStack {
-            ForEach(0 ..< self.noOfCharacters, id: \.self) { index in
-                self.splitFlaps[index]
+            Group {
+                Spacer()
+                ForEach(0 ..< self.noOfCharacters, id: \.self) { index in
+                    self.splitFlaps[index]
+                }
+                Spacer()
             }
         }
     }
